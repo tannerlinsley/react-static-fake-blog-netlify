@@ -26,21 +26,32 @@ export default {
         path: '/about',
         component: 'src/containers/About',
       },
-      {
-        path: '/blog',
-        component: 'src/containers/Blog',
-        getData: () => ({
-          posts,
-        }),
-        children: posts.map(post => ({
-          path: `/post/${post.id}`,
-          component: 'src/containers/Post',
+      // Make an index route for every 5 blog posts
+      ...makePageRoutes({
+        items: posts,
+        pageSize: 5,
+        pageToken: 'page',
+        route: {
+          path: 'blog',
+          component: 'src/containers/Blog',
+        },
+        decorate: (posts, i, totalPages) => ({
           getData: () => ({
-            post,
-            user: users.find(user => user.id === post.userId),
+            posts,
+            currentPage: i,
+            totalPages,
           }),
-        })),
-      },
+        }),
+      }),
+      // Make the routes for each blog post
+      ...posts.map(post => ({
+        path: `/blog/post/${post.id}`,
+        component: 'src/containers/Post',
+        getData: () => ({
+          post,
+          user: users.find(user => user.id === post.userId),
+        }),
+      })),
       {
         path: '/users',
         component: 'src/containers/Users',
