@@ -1,5 +1,5 @@
 import React from 'react'
-import { withRouteData, Link } from 'react-static'
+import { RouteData, Link, Head } from 'react-static'
 import styled from 'styled-components'
 //
 
@@ -11,29 +11,36 @@ const PaginationLink = styled(({ isCurrent, ...rest }) => <Link {...rest} />)`
   opacity: ${props => (props.isCurrent ? 0.5 : 1)};
 `
 
-export default withRouteData(({ posts, currentPage, totalPages }) => (
-  <div>
-    <h1>It's blog time.</h1>
-    <ul>
-      {posts.map(post => (
-        <li key={post.id}>
-          <Link to={`/blog/post/${post.id}/`}>{post.title}</Link>
-        </li>
-      ))}
-    </ul>
+export default () => (
+  <RouteData
+    render={({ posts, currentPage, totalPages }) => (
+      <div>
+        <Head>
+          <title>Blog | React Static</title>
+        </Head>
+        <h1>It's blog time.</h1>
+        <ul>
+          {posts.map(post => (
+            <li key={post.id}>
+              <Link to={`/blog/post/${post.id}/`}>{post.title}</Link>
+            </li>
+          ))}
+        </ul>
 
-    <h5>Pages</h5>
-    <div>
-      {Array.from(new Array(totalPages), (d, i) => i).map(page => {
-        page += 1
-        return (
-          <span key={page}>
-            <PaginationLink to={`/blog/page/${page}`} isCurrent={page === currentPage}>
-              {page}
-            </PaginationLink>
-          </span>
-        )
-      })}
-    </div>
-  </div>
-))
+        <h5>Pages</h5>
+        <div>
+          {Array.from(new Array(totalPages), (d, i) => i).map(page => {
+            page += 1
+            return (
+              <span key={page}>
+                <PaginationLink to={`/blog/page/${page}`} isCurrent={page === currentPage}>
+                  {page}
+                </PaginationLink>
+              </span>
+            )
+          })}
+        </div>
+      </div>
+    )}
+  />
+)
