@@ -8,6 +8,15 @@ export default {
   }),
   getRoutes: async () => {
     const { data: posts } = await axios.get('https://jsonplaceholder.typicode.com/posts')
+    const { data: users } = await axios.get('https://jsonplaceholder.typicode.com/users')
+
+    const postsByUserID = {}
+
+    posts.forEach(post => {
+      postsByUserID[post.userId] = postsByUserID[post.userId] || []
+      postsByUserID[post.userId].push(post)
+    })
+
     return [
       {
         path: '/',
@@ -28,6 +37,22 @@ export default {
           component: 'src/containers/Post',
           getData: () => ({
             post,
+            user: users.find(user => user.id === post.userId),
+          }),
+        })),
+      },
+      {
+        path: '/users',
+        component: 'src/containers/Users',
+        getData: () => ({
+          users,
+        }),
+        children: users.map(user => ({
+          path: `/${user.username}`,
+          component: 'src/containers/User',
+          getData: () => ({
+            user,
+            posts: postsByUserID[user.id],
           }),
         })),
       },
